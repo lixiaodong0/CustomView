@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.lixd.costom.view.R;
 
-public class FlowLayoutActivity extends AppCompatActivity {
+public class CustomFlowLayoutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

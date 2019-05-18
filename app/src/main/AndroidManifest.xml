@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".flowlayout.FlowLayoutActivity">
+        <activity android:name=".flowlayout.CustomFlowLayoutActivity">
         </activity>
         <activity android:name=".linearlayout.CustomLinearLayoutActivity">
         </activity>
