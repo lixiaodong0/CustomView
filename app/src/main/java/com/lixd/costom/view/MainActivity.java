@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.lixd.costom.view.flowlayout.CustomFlowLayoutActivity;
 import com.lixd.costom.view.linearlayout.CustomLinearLayoutActivity;
+import com.lixd.costom.view.recyclerview.RecyclerViewDemoActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,5 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onCustomFlowLayout(View v) {
         startActivity(new Intent(this, CustomFlowLayoutActivity.class));
+    }
+    public void onRecyclerView(View v) {
+        startActivity(new Intent(this, RecyclerViewDemoActivity.class));
     }
 }

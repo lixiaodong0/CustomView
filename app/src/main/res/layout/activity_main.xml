@@ -21,4 +21,10 @@
         android:text="自定义FlowLayout"
         android:onClick="onCustomFlowLayout"
         android:textAllCaps="false"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RecyclerView部分"
+        android:onClick="onRecyclerView"
+        android:textAllCaps="false"/>
 </LinearLayout>
