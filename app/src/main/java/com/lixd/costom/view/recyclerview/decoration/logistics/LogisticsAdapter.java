@@ -3,8 +3,14 @@ package com.lixd.costom.view.recyclerview.decoration.logistics;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.lixd.costom.view.R;
 
 import java.util.List;
 
@@ -20,12 +26,17 @@ public class LogisticsAdapter extends RecyclerView.Adapter<LogisticsAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return null;
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_logistics_list, viewGroup, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-
+        LogisticsBean data = getData(i);
+        viewHolder.tvTitle.setText(data.title);
+        viewHolder.tvTitle.setVisibility(TextUtils.isEmpty(data.title) ? View.GONE : View.VISIBLE);
+        viewHolder.tvDetail.setText(data.detail);
+        Log.e("onBindViewHolder", "index=" + i + ",iconRes=" + data.node.iconRes);
     }
 
     @Override
@@ -47,8 +58,13 @@ public class LogisticsAdapter extends RecyclerView.Adapter<LogisticsAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        public final TextView tvTitle;
+        public final TextView tvDetail;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvTitle = itemView.findViewById(R.id.tv_title);
+            tvDetail = itemView.findViewById(R.id.tv_detail);
         }
     }
 }
