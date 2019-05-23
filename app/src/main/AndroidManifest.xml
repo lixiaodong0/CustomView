@@ -10,6 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".recyclerview.layoutmanager.LayoutManagerDemoActivity">
+        </activity>
         <activity android:name=".recyclerview.decoration.logistics.LogisticsDecorationActivity">
         </activity>
         <activity android:name=".recyclerview.decoration.base.BaseDecorationActivity">

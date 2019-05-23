@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.lixd.costom.view.R;
+import com.lixd.costom.view.recyclerview.adapter.TestAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

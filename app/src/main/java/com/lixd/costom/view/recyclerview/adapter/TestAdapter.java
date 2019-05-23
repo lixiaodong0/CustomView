@@ -1,4 +1,4 @@
-package com.lixd.costom.view.recyclerview.decoration.base;
+package com.lixd.costom.view.recyclerview.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

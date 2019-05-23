@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.lixd.costom.view.R;
 import com.lixd.costom.view.recyclerview.decoration.ItemDecorationDemoActivity;
+import com.lixd.costom.view.recyclerview.layoutmanager.LayoutManagerDemoActivity;
 
 public class RecyclerViewDemoActivity extends AppCompatActivity {
 
@@ -18,5 +19,9 @@ public class RecyclerViewDemoActivity extends AppCompatActivity {
 
     public void onItemDecorationActivity(View v) {
         startActivity(new Intent(this, ItemDecorationDemoActivity.class));
+    }
+
+    public void onItemLayoutManagerActivity(View v) {
+        startActivity(new Intent(this, LayoutManagerDemoActivity.class));
     }
 }
