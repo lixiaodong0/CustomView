@@ -1,7 +1,6 @@
 package com.lixd.costom.view.recyclerview.layoutmanager;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 public class CustomLayoutManager extends RecyclerView.LayoutManager {
