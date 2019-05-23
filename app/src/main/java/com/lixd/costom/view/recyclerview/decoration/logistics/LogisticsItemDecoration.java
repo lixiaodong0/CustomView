@@ -130,12 +130,12 @@ public class LogisticsItemDecoration extends RecyclerView.ItemDecoration {
         }
 
         int left = child.getLeft();
-        //找出画圆的中心x轴  left - 一个Rig
+        //找出画圆的中心x轴
         float cx = left - LEFT_RIGHT_SPACE_WIDTH - MAX_ICON_WIDTH / 2;
-        //找出控件,方便获取控件高度
+        //找出控件,方便获取控件高度, 需要搭配adapter里面的控件联动
         View tvTitle = child.findViewById(R.id.tv_title);
         View tvDetail = child.findViewById(R.id.tv_detail);
-
+        //根据资源图片读取不同的控件高度 这是因为title控件没有值的时候,会隐藏起来
         int height = data.node.iconRes != 0 ? tvTitle.getHeight() : tvDetail.getHeight();
         //绘制图片
         drawIconLayout(c, cx, child, height, data.node, lastData == null ? null : lastData.node);
@@ -155,6 +155,7 @@ public class LogisticsItemDecoration extends RecyclerView.ItemDecoration {
     private void drawIconLayout(Canvas c, float cx, View child, int height, LogisticsBean.Node node, LogisticsBean.Node lastNode) {
         int cy = 0;
         if (node.iconRes != 0) {
+            //计算大圆的中心y轴
             cy = child.getTop() + height / 2;
             //绘制承载图片的圆形
             c.drawCircle(cx, cy, BIG_CIRCLE_SIZE / 2, mBigCirclePaint);
@@ -169,6 +170,7 @@ public class LogisticsItemDecoration extends RecyclerView.ItemDecoration {
             }
         } else {
             //没有图片 绘制小圆点
+            //计算小圆的中心y轴
             cy = child.getTop() + height / 2;
             c.drawCircle(cx, cy, SMALL_CIRCLE_SIZE / 2, mSmallCirclePaint);
         }
@@ -181,21 +183,24 @@ public class LogisticsItemDecoration extends RecyclerView.ItemDecoration {
         //绘制底部的线条
         float startX = cx;
         float startY = cy + (isDrawIcon ? BIG_CIRCLE_SIZE / 2 : SMALL_CIRCLE_SIZE / 2);
+
         if (!isDrawIcon) {
+            //如果绘制小圆点的时候,少绘制10个像素点,空出一点边距
             startY += 10;
         }
         if (node.isNextNode) {
             c.drawLine(startX, startY, startX, child.getBottom(), mLinePaint);
         }
+
         //绘制顶部的线条
         if (lastNode != null && lastNode.isSelected) {
             mLinePaint.setColor(DEFAULT_SELECTED_LINE_COLOR);
         } else {
             mLinePaint.setColor(DEFAULT_LINE_COLOR);
         }
-
         float endY = cy - (isDrawIcon ? BIG_CIRCLE_SIZE / 2 : SMALL_CIRCLE_SIZE / 2);
         if (!isDrawIcon) {
+            //如果绘制小圆点的时候,少绘制10个像素点,空出一点边距
             endY -= 10;
         }
         if (!node.isFinish) {
