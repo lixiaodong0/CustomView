@@ -23,6 +23,7 @@ public class LayoutManagerDemoActivity extends AppCompatActivity {
         }
         RecyclerView rcDemo = findViewById(R.id.rv_demo);
         rcDemo.setLayoutManager(new CustomLayoutManager());
+//        rcDemo.setLayoutManager(new LinearLayoutManager(this));
         rcDemo.setAdapter(new TestAdapter(this, list));
     }
 }
