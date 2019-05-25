@@ -82,6 +82,7 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         int scrollOffset = dy;
+
         if (totalScrollHeight + scrollOffset < 0) {
             //滑动到顶部 需要越界处理
             scrollOffset = -totalScrollHeight;
@@ -89,6 +90,21 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
             //滑动到底部 需要越界处理
             scrollOffset = totalHeight - getVerticalSpace() - totalScrollHeight;
         }
+
+
+        //回收越界的子View
+        for (int i = getChildCount() - 1; i >= 0; i--) {
+            View child = getChildAt(i);
+            if (scrollOffset > 0) {
+                //需要回收当前屏幕，上越界的View
+                if (getDecoratedBottom(child) - scrollOffset < 0) {
+                    removeAndRecycleView(child, recycler);
+                    continue;
+                }
+            }
+        }
+
+
         totalScrollHeight += scrollOffset;
         //offsetChildrenVertical() 用于滚动所有的子View一段距离
         offsetChildrenVertical(-scrollOffset);
