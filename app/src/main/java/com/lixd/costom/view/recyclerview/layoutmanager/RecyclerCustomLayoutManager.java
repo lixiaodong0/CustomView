@@ -2,7 +2,6 @@ package com.lixd.costom.view.recyclerview.layoutmanager;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -97,16 +96,9 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
             scrollOffset = mTotalHeight - getVerticalSpace() - mTotalScrollHeight;
         }
 
-
-        Log.e("removeAndRecycleView", "getVerticalSpace=" + getVerticalSpace());
-        Log.e("removeAndRecycleView", "scrollOffset:" + scrollOffset);
-
         //回收越界的子View
         for (int i = getChildCount() - 1; i >= 0; i--) {
             View child = getChildAt(i);
-            Log.e("removeAndRecycleView", "i:" + i);
-            Log.e("removeAndRecycleView", "view.top:" + getDecoratedTop(child));
-            Log.e("removeAndRecycleView", "view.bottom:" + getDecoratedBottom(child));
             if (scrollOffset > 0) {
                 //需要回收当前屏幕，上越界的View
                 if (getDecoratedBottom(child) - scrollOffset < 0) {
@@ -116,7 +108,6 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
             } else if (scrollOffset < 0) {
                 //需要回收当前屏幕，下越界的View
                 if (getDecoratedTop(child) - scrollOffset > getHeight() - getPaddingBottom()) {
-                    Log.e("scrollVerticallyBy", "回收了---i" + i);
                     removeAndRecycleView(child, recycler);
                     continue;
                 }
