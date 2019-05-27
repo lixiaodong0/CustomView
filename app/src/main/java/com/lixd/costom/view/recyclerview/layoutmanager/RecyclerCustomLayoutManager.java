@@ -2,6 +2,7 @@ package com.lixd.costom.view.recyclerview.layoutmanager;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -42,9 +43,10 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
 
         //布置可见的HolderView
         for (int i = 0; i < visibleCount; i++) {
-            View childShowView = recycler.getViewForPosition(i);
-            measureChildWithMargins(childShowView, 0, 0);
             Rect rect = mItemRects.get(i);
+            View childShowView = recycler.getViewForPosition(i);
+            addView(childShowView);
+            measureChildWithMargins(childShowView, 0, 0);
             layoutDecorated(childShowView, rect.left, rect.top, rect.right, rect.bottom);
         }
 
@@ -81,20 +83,30 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
      */
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        if (getItemCount() == 0) {
+            return dy;
+        }
+
         int scrollOffset = dy;
 
-        if (mTotalScrollHeight + scrollOffset < 0) {
+        if (mTotalScrollHeight + dy < 0) {
             //滑动到顶部 需要越界处理
             scrollOffset = -mTotalScrollHeight;
-        } else if (mTotalScrollHeight + scrollOffset > mTotalHeight - getVerticalSpace()) {
+        } else if (mTotalScrollHeight + dy > mTotalHeight - getVerticalSpace()) {
             //滑动到底部 需要越界处理
             scrollOffset = mTotalHeight - getVerticalSpace() - mTotalScrollHeight;
         }
 
 
+        Log.e("removeAndRecycleView", "getVerticalSpace=" + getVerticalSpace());
+        Log.e("removeAndRecycleView", "scrollOffset:" + scrollOffset);
+
         //回收越界的子View
         for (int i = getChildCount() - 1; i >= 0; i--) {
             View child = getChildAt(i);
+            Log.e("removeAndRecycleView", "i:" + i);
+            Log.e("removeAndRecycleView", "view.top:" + getDecoratedTop(child));
+            Log.e("removeAndRecycleView", "view.bottom:" + getDecoratedBottom(child));
             if (scrollOffset > 0) {
                 //需要回收当前屏幕，上越界的View
                 if (getDecoratedBottom(child) - scrollOffset < 0) {
@@ -104,34 +116,34 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
             } else if (scrollOffset < 0) {
                 //需要回收当前屏幕，下越界的View
                 if (getDecoratedTop(child) - scrollOffset > getHeight() - getPaddingBottom()) {
+                    Log.e("scrollVerticallyBy", "回收了---i" + i);
                     removeAndRecycleView(child, recycler);
                     continue;
                 }
             }
         }
 
-        if (scrollOffset > 0) {
-            //获取屏幕可见的距离
-            Rect visibleArea = getVisibleArea(scrollOffset);
+        //布局子View
+        //获取屏幕可见的距离
+        Rect visibleArea = getVisibleArea(scrollOffset);
+        if (scrollOffset >= 0) {
             //获取屏幕最后一个View
             View lastView = getChildAt(getChildCount() - 1);
             //获取最后一个View下一个View
             int nextPosition = getPosition(lastView) + 1;
             //从下一个View开始遍历,如果有相交部分就布局出来
-            for (int i = nextPosition; i < getItemCount() - 1; i++) {
+            for (int i = nextPosition; i <= getItemCount() - 1; i++) {
                 Rect rect = mItemRects.get(i);
                 if (Rect.intersects(visibleArea, rect)) {
                     View showView = recycler.getViewForPosition(i);
                     addView(showView);
                     measureChildWithMargins(showView, 0, 0);
-                    layoutDecoratedWithMargins(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
+                    layoutDecorated(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
                 } else {
                     break;
                 }
             }
         } else {
-            //获取屏幕可见的距离
-            Rect visibleArea = getVisibleArea(scrollOffset);
             //获取屏幕第一个View
             View firstView = getChildAt(0);
             //获取第一个View的上一个
@@ -143,7 +155,7 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
                     View showView = recycler.getViewForPosition(i);
                     addView(showView);
                     measureChildWithMargins(showView, 0, 0);
-                    layoutDecoratedWithMargins(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
+                    layoutDecorated(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
                 } else {
                     break;
                 }
@@ -153,20 +165,20 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
         mTotalScrollHeight += scrollOffset;
         //offsetChildrenVertical() 用于滚动所有的子View一段距离
         offsetChildrenVertical(-scrollOffset);
-        return dy;
+        return scrollOffset;
     }
 
     /**
      * 获取可见的区域
      *
-     * @param scrollOffset 当前滚动的偏移量
+     * @param dy 当前滚动的偏移量
      * @return
      */
-    private Rect getVisibleArea(int scrollOffset) {
+    private Rect getVisibleArea(int dy) {
         return new Rect(getPaddingLeft(),
-                getPaddingTop() + mTotalScrollHeight + scrollOffset,
+                getPaddingTop() + mTotalScrollHeight + dy,
                 getWidth() + getPaddingRight(),
-                getVerticalSpace() + mTotalScrollHeight + scrollOffset);
+                getVerticalSpace() + mTotalScrollHeight + dy);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_test_list, viewGroup, false);
         createCount++;
-        Log.e(TAG, "createCount=" + createCount);
+        Log.e(TAG, "onCreateViewHolder=" + createCount);
         return new ViewHolder(view);
     }
 
