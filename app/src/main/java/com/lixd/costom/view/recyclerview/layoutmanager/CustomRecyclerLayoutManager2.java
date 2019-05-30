@@ -6,9 +6,9 @@ import android.util.SparseArray;
 import android.view.View;
 
 /**
- * 自定义回收的LayoutManager
+ * 自定义回收的LayoutManager 2
  */
-public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
+public class CustomRecyclerLayoutManager2 extends RecyclerView.LayoutManager {
     //保存所有item的布局位置
     private SparseArray<Rect> mItemRects = new SparseArray<>();
 
@@ -114,62 +114,57 @@ public class RecyclerCustomLayoutManager extends RecyclerView.LayoutManager {
             }
         }
 
-        //布局子View
+        //1.首先拿到屏幕最后一个跟第一个的View
+        View lastView = getChildAt(getChildCount() - 1);
+        View firstView = getChildAt(0);
+        //2.清空屏幕
+        detachAndScrapAttachedViews(recycler);
+        mTotalScrollHeight += scrollOffset;
         //获取屏幕可见的距离
-        Rect visibleArea = getVisibleArea(scrollOffset);
+        Rect visibleArea = getVisibleArea();
+
         if (scrollOffset >= 0) {
-            //获取屏幕最后一个View
-            View lastView = getChildAt(getChildCount() - 1);
-            //获取最后一个View下一个View
-            int nextPosition = getPosition(lastView) + 1;
+            int minPosition = getPosition(firstView);
             //从下一个View开始遍历,如果有相交部分就布局出来
-            for (int i = nextPosition; i <= getItemCount() - 1; i++) {
-                Rect rect = mItemRects.get(i);
-                if (Rect.intersects(visibleArea, rect)) {
-                    View showView = recycler.getViewForPosition(i);
-                    addView(showView);
-                    measureChildWithMargins(showView, 0, 0);
-                    layoutDecorated(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
-                } else {
-                    break;
-                }
+            for (int i = minPosition; i < getItemCount(); i++) {
+                insertView(i, visibleArea, recycler, false);
             }
         } else {
-            //获取屏幕第一个View
-            View firstView = getChildAt(0);
-            //获取第一个View的上一个
-            int maxPosition = getPosition(firstView) - 1;
+            int maxPosition = getPosition(lastView);
             //从下一个View开始遍历,如果有相交部分就布局出来
             for (int i = maxPosition; i >= 0; i--) {
-                Rect rect = mItemRects.get(i);
-                if (Rect.intersects(visibleArea, rect)) {
-                    View showView = recycler.getViewForPosition(i);
-                    addView(showView);
-                    measureChildWithMargins(showView, 0, 0);
-                    layoutDecorated(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
-                } else {
-                    break;
-                }
+                insertView(i, visibleArea, recycler, true);
             }
         }
-
-        mTotalScrollHeight += scrollOffset;
-        //offsetChildrenVertical() 用于滚动所有的子View一段距离
-        offsetChildrenVertical(-scrollOffset);
         return scrollOffset;
+    }
+
+    private void insertView(int position, Rect visibleArea, RecyclerView.Recycler recycler, boolean firstPos) {
+        Rect rect = mItemRects.get(position);
+        if (Rect.intersects(visibleArea, rect)) {
+            View showView = recycler.getViewForPosition(position);
+            if (firstPos) {
+                addView(showView, 0);
+            } else {
+                addView(showView);
+            }
+            measureChildWithMargins(showView, 0, 0);
+            layoutDecorated(showView, rect.left, rect.top - mTotalScrollHeight, rect.right, rect.bottom - mTotalScrollHeight);
+            //布局完成 让View执行Y轴动画
+            showView.setRotationY(showView.getRotationY() + 1);
+        }
     }
 
     /**
      * 获取可见的区域
      *
-     * @param dy 当前滚动的偏移量
      * @return
      */
-    private Rect getVisibleArea(int dy) {
+    private Rect getVisibleArea() {
         return new Rect(getPaddingLeft(),
-                getPaddingTop() + mTotalScrollHeight + dy,
+                getPaddingTop() + mTotalScrollHeight,
                 getWidth() + getPaddingRight(),
-                getVerticalSpace() + mTotalScrollHeight + dy);
+                getVerticalSpace() + mTotalScrollHeight);
     }
 
     @Override

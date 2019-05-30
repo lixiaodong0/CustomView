@@ -22,8 +22,7 @@ public class LayoutManagerDemoActivity extends AppCompatActivity {
             list.add("第" + (i + 1) + "数据");
         }
         RecyclerView rcDemo = findViewById(R.id.rv_demo);
-        rcDemo.setLayoutManager(new CustomLayoutManagerRecyclered());
-        //        rcDemo.setLayoutManager(new LinearLayoutManager(this));
+        rcDemo.setLayoutManager(new CustomRecyclerLayoutManager3());
         rcDemo.setAdapter(new TestAdapter(this, list));
     }
 }
