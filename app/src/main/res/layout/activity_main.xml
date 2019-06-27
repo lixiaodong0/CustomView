@@ -11,20 +11,38 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="自定义LinearLayout"
         android:onClick="onCustomLinearLayout"
+        android:text="自定义LinearLayout"
         android:textAllCaps="false"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="自定义FlowLayout"
         android:onClick="onCustomFlowLayout"
+        android:text="自定义FlowLayout"
         android:textAllCaps="false"/>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="RecyclerView部分"
         android:onClick="onRecyclerView"
+        android:text="RecyclerView部分"
         android:textAllCaps="false"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.lixd.costom.view.comment.RecordAudioButton
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@android:color/white"
+            android:text="按住 说话"
+            android:textSize="14sp"/>
+    </RelativeLayout>
+
+
 </LinearLayout>
