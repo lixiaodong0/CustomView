@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaRecorder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,8 +13,13 @@ import android.widget.TextView;
 
 import com.lixd.costom.view.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RecordStateDialog extends Dialog {
     private static final String TAG = "RecordStateDialog";
+    //最大音量图片大小
+    private static final int MAX_VOLUME_PIC_SIZE = 9;
     private Context mContext;
     private View rootView;
     private TextView tvStateText;
@@ -20,6 +27,21 @@ public class RecordStateDialog extends Dialog {
     private StateType mCurStateType;
     private int mCountDownValue = 0;
     private Activity mActivity;
+    private static Map<Integer, Integer> VOLUME_PIC_MAP;
+
+    static {
+        //初始化图片
+        VOLUME_PIC_MAP = new HashMap<>();
+        VOLUME_PIC_MAP.put(0, R.mipmap.rc_ic_volume_0);
+        VOLUME_PIC_MAP.put(1, R.mipmap.rc_ic_volume_1);
+        VOLUME_PIC_MAP.put(2, R.mipmap.rc_ic_volume_2);
+        VOLUME_PIC_MAP.put(3, R.mipmap.rc_ic_volume_3);
+        VOLUME_PIC_MAP.put(4, R.mipmap.rc_ic_volume_4);
+        VOLUME_PIC_MAP.put(5, R.mipmap.rc_ic_volume_5);
+        VOLUME_PIC_MAP.put(6, R.mipmap.rc_ic_volume_6);
+        VOLUME_PIC_MAP.put(7, R.mipmap.rc_ic_volume_7);
+        VOLUME_PIC_MAP.put(8, R.mipmap.rc_ic_volume_8);
+    }
 
     public RecordStateDialog(Context context) {
         this(context, R.style.dialog);
@@ -77,6 +99,8 @@ public class RecordStateDialog extends Dialog {
      *
      * @param stateType
      */
+    private MediaRecorder mediaRecorder;
+
     private void refreshState(StateType stateType) {
         mCurStateType = stateType;
         switch (stateType) {
@@ -87,7 +111,14 @@ public class RecordStateDialog extends Dialog {
                 break;
             case TIMEOUT:
             case NORMAL:
-                imgState.setImageResource(R.mipmap.rc_ic_volume_0);
+                /**
+                 * 本来应该根据当前分贝值展示合适的图片
+                 * 但是因为AudioRecord没有获取分贝的方法,故而采用获取系统音量值来展示
+                 *
+                 * 如果采用MediaRecorder录制音频的话
+                 * 可以参考这个文章:https://blog.csdn.net/a1527238987/article/details/80423565
+                 */
+                imgState.setImageResource(getVolumePic(getCurrentAudioVolumePercent()));
                 if (mCountDownValue != 0) {
                     String text = "还可以说" + mCountDownValue + "秒";
                     tvStateText.setText(text);
@@ -104,5 +135,60 @@ public class RecordStateDialog extends Dialog {
             default:
                 break;
         }
+    }
+
+    /**
+     * 根据百分比值获取一张音量图片
+     *
+     * @return
+     */
+    private int getVolumePic(float percentValue) {
+        int index = (int) (MAX_VOLUME_PIC_SIZE * percentValue);
+        return VOLUME_PIC_MAP.get(index);
+    }
+
+
+    /**
+     * 获取当前系统音量的百分比值
+     *
+     * @return
+     */
+    private float getCurrentAudioVolumePercent() {
+        float maxValue = getAudioMaxVolumeAValue();
+        float currentValue = getAudioCurrentVolumeAValue();
+        float percent = currentValue / maxValue;
+        return percent;
+    }
+
+    /**
+     * 通话音量:AudioManager.STREAM_VOICE_CALL
+     * 系统音量:AudioManager.STREAM_SYSTEM
+     * 铃声音量:AudioManager.STREAM_RING
+     * 音乐音量:AudioManager.STREAM_MUSIC
+     * 提示声音音量:AudioManager.STREAM_ALARM
+     *
+     * @return
+     */
+    private AudioManager getAudioManager() {
+        return (AudioManager) mActivity.getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    /**
+     * 获取媒体最大音量值
+     *
+     * @return
+     */
+    private int getAudioMaxVolumeAValue() {
+        return getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    }
+
+
+    /**
+     * 获取媒体当前音量值
+     *
+     * @return
+     */
+    private int getAudioCurrentVolumeAValue() {
+        return getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 }

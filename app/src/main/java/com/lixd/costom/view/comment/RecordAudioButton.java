@@ -59,12 +59,11 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
             } else if (second <= 0) {
                 //60秒倒计时后结束录制
                 isHandlerRecordResult = true;
-                Log.e(TAG, "x=" + x + ",y=" + y);
                 handlerRecordResult(x, y);
                 mDialog.closeDialog();
 
             }
-            Log.d(TAG, "second=" + second);
+            Log.e(TAG, "second=" + second);
         }
 
         @Override
@@ -81,20 +80,24 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        Log.d(TAG, "onWindowFocusChanged = " + hasWindowFocus);
+        Log.e(TAG, "onWindowFocusChanged = " + hasWindowFocus);
         if (!hasWindowFocus) {
             /**
              * 当页面失去焦点的时候,如:
              *     跳转另外一个页面,
-             *     由前台转为后台等,
+             *     由前台转为后台等
+             *     页面弹出Dialog等,
              * 我们就认为这一次的录制没有成功,需要取消倒计时任务.
              * 另外失去焦点的时候,如果我们在正在触摸控件,手指抬起的时候,
              * 我们会收到一个Cancel事件,停止录制的操作就在Cancel事件处理了,
              * 这里只需要取消倒计时任务就行.
              */
-            mCountDownTimer.cancel();
+            if (!mDialog.isShowing()) {  //过滤自身弹窗引起的onWindowFocusChanged变化
+                mCountDownTimer.cancel();
+            }
         }
     }
+
 
     /**
      * 当activity执行onDestroy()方法,会执行这个方法,
@@ -103,7 +106,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.d(TAG, "onDetachedFromWindow");
+        Log.e(TAG, "onDetachedFromWindow");
         //销毁录制帮助对象
         RecordAudioHelper.getInstance().destroy();
         //重置
@@ -153,7 +156,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
                     mStartRecordTime = System.currentTimeMillis();
                     //开启60秒倒计时
                     mCountDownTimer.start();
-                    Log.d(TAG, "录制开始时间：" + mStartRecordTime);
+                    Log.e(TAG, "录制开始时间：" + mStartRecordTime);
                     //开启录制功能
                     RecordAudioHelper.getInstance().startRecord(getContext(), this);
                 }
@@ -182,17 +185,17 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
                 } else {
                     isHandlerRecordResult = false;
                 }
-                Log.d(TAG, "ACTION_UP");
+                Log.e(TAG, "ACTION_UP");
                 //重置数据
                 reset();
                 break;
             //如果发生取消事件,取消录制
             case MotionEvent.ACTION_CANCEL:
                 setText("按住 说话");
-                isHandlerRecordResult = true;
+                isHandlerRecordResult = false;
                 RecordAudioHelper.getInstance().stopRecord(StateType.CANCEL);
                 reset();
-                Log.d(TAG, "ACTION_CANCEL");
+                Log.e(TAG, "ACTION_CANCEL");
                 break;
         }
         //将事件传递给Button

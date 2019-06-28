@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -35,10 +36,16 @@ public class RecordAudioHelper {
     private Handler mHandler = null;
     //录制的线程,用于将音频源输出到本地存储卡
     private RecordRunnable mRecordRunnable;
-    private Context mContext;
 
     private RecordAudioHelper() {
         //构建录音对象
+        /**
+         * audioSource:是指录制源在此我们选择麦克风
+         * sampleRateInHz:默认采样频率，以赫兹为单位，官方文档说44100 为目前所有设备兼容，但是如果用模拟器测试的话会有问题，所以有的也用8000
+         * channelConfig:描述音频通道设置 CHANNEL_IN_MONO保证能在所有设备上工作
+         * audioFormat:音频流的格式，分为16bit 或8bit目前都支持的是ENCODING_PCM_16BIT.
+         * bufferSizeInBytes:在录制过程中,音频数据写入缓冲区的总数(字节).从缓冲区读取的新音频数据总会小于此值.这个值一般通过getMinBufferSize来获取.getMinBufferSize的参数可以参照audiorecord的构造函数。
+         */
         mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_IN_HZ, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE_IN_BYTES);
         mHandler = new Handler(Looper.getMainLooper());
     }
@@ -51,15 +58,16 @@ public class RecordAudioHelper {
      */
     public void startRecord(Context context, RecordAudioListener listener) {
         if (isRecording()) {
-            Log.d(TAG, "录制还未结束,请勿重复录制");
+            Log.e(TAG, "录制还未结束,请勿重复录制");
             return;
         }
-        Log.d(TAG, "开启录制线程.......");
+        Log.e(TAG, "开启录制线程.......");
         isRecording = true;
         mAudioRecord.startRecording();
         //生成的文件路径如下: data/user/0/包名/cache/audio/1561711377776.wav
         String fileName = System.currentTimeMillis() + ".wav";
-        File recordFile = new File(getRecordRootDir(context), fileName);
+        //        File recordFile = new File(getRecordRootDir(context), fileName);
+        File recordFile = new File(getSdRecordRootDir(), fileName);
         mRecordRunnable = new RecordRunnable(recordFile, listener);
         Thread thread = new Thread(mRecordRunnable);
         thread.start();
@@ -80,6 +88,10 @@ public class RecordAudioHelper {
         return new File(context.getCacheDir(), "audio");
     }
 
+    private File getSdRecordRootDir() {
+        return new File(Environment.getExternalStorageDirectory(), "GGN/audio");
+    }
+
     /**
      * 结束录制的方法
      *
@@ -87,7 +99,7 @@ public class RecordAudioHelper {
      */
     public void stopRecord(StateType type) {
         if (isRecording()) {
-            Log.d(TAG, "关闭录制线程.......");
+            Log.e(TAG, "关闭录制线程.......");
             mAudioRecord.stop();
             isRecording = false;
             switch (type) {
@@ -189,7 +201,7 @@ public class RecordAudioHelper {
                 if (!isRecordCancel) {
                     //录制成功回调
                     if (listener != null) {
-                        Log.d(TAG, "录制成功->" + recordFile.getAbsolutePath());
+                        Log.e(TAG, "录制成功->" + recordFile.getAbsolutePath());
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -199,12 +211,12 @@ public class RecordAudioHelper {
                     }
                 } else {
                     //如果是取消状态,删除刚刚录制好的文件,减少存储的空间
-                    Log.d(TAG, "取消录制,删除录制文件->" + recordFile.getAbsolutePath());
+                    Log.e(TAG, "取消录制,删除录制文件->" + recordFile.getAbsolutePath());
                     deleteRecordFile();
                 }
             } catch (IOException e) {
                 if (listener != null) {
-                    Log.d(TAG, "录制发生了错误", e);
+                    Log.e(TAG, "录制发生了错误", e);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -242,7 +254,7 @@ public class RecordAudioHelper {
         private void deleteRecordFile() {
             if (recordFile.exists() && recordFile.isFile()) {
                 boolean delete = recordFile.delete();
-                Log.d(TAG, "delete=" + delete);
+                Log.e(TAG, "delete=" + delete);
             }
         }
 
