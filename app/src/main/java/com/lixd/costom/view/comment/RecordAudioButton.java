@@ -302,8 +302,8 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
 
     //音频录制成功回调
     @Override
-    public void onSuccess(File recordAudioFile) {
-        Toast.makeText(getContext(), "录制成功", Toast.LENGTH_SHORT).show();
+    public void onSuccess(File recordAudioFile, long recordDuration) {
+        Toast.makeText(getContext(), "录制成功,时长:" + (recordDuration / 1000) + "秒", Toast.LENGTH_SHORT).show();
     }
 
     //音频录制失败的回调

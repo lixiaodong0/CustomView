@@ -170,6 +170,7 @@ public class RecordAudioHelper {
             OutputStream os = null;
             ByteArrayOutputStream baos = null;
             try {
+                long startTime = System.currentTimeMillis();
                 if (!recordFile.getParentFile().exists()) {
                     recordFile.getParentFile().mkdirs();
                 }
@@ -198,6 +199,9 @@ public class RecordAudioHelper {
                 baos.close();
                 os.close();
 
+                //计算录制的时长
+                long endTime = System.currentTimeMillis();
+                final long recordDuration = endTime - startTime;
                 if (!isRecordCancel) {
                     //录制成功回调
                     if (listener != null) {
@@ -205,7 +209,7 @@ public class RecordAudioHelper {
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onSuccess(recordFile);
+                                listener.onSuccess(recordFile, recordDuration);
                             }
                         });
                     }

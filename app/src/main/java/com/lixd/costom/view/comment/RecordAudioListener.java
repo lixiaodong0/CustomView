@@ -12,8 +12,9 @@ public interface RecordAudioListener {
      * 录制成功的回调
      *
      * @param recordAudioFile 录制成功的音频文件
+     * @param recordDuration  录制的时长
      */
-    void onSuccess(File recordAudioFile);
+    void onSuccess(File recordAudioFile, long recordDuration);
 
     /**
      * 录制出现错误的回调
