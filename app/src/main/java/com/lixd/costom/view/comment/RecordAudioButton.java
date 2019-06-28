@@ -158,7 +158,11 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
                     mCountDownTimer.start();
                     Log.e(TAG, "录制开始时间：" + mStartRecordTime);
                     //开启录制功能
-                    RecordAudioHelper.getInstance().startRecord(getContext(), this);
+                    if (mRecordAudioListener == null) {
+                        RecordAudioHelper.getInstance().startRecord(getContext(), this);
+                    } else {
+                        RecordAudioHelper.getInstance().startRecord(getContext(), mRecordAudioListener);
+                    }
                 }
 
                 if (isRecord(x, y)) {
@@ -298,6 +302,12 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
         mDownTime = 0;
         mStartRecordTime = 0;
         isReady = false;
+    }
+
+    private RecordAudioListener mRecordAudioListener;
+
+    private void setRecordAudioListener(RecordAudioListener listener) {
+        mRecordAudioListener = listener;
     }
 
     //音频录制成功回调
