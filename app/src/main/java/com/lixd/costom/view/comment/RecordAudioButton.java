@@ -155,7 +155,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
                     mCountDownTimer.start();
                     Log.d(TAG, "录制开始时间：" + mStartRecordTime);
                     //开启录制功能
-                    RecordAudioHelper.getInstance().startRecord(this);
+                    RecordAudioHelper.getInstance().startRecord(getContext(), this);
                 }
 
                 if (isRecord(x, y)) {

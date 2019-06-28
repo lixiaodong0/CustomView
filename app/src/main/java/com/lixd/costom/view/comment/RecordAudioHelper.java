@@ -1,9 +1,9 @@
 package com.lixd.costom.view.comment;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -18,13 +18,13 @@ import java.io.OutputStream;
  * 类名:RecordAudioHelper
  * 功能:录制音频帮助类
  * 音频的格式: WAV格式
+ * 参考文章:https://blog.csdn.net/top_code/article/details/44651313
  */
 public class RecordAudioHelper {
     private static final String TAG = "RecordAudioHelper";
     private static final int SAMPLE_RATE_IN_HZ = 44100;
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-    private static final File RECORD_ROOT_DIR = new File(Environment.getExternalStorageDirectory(), "GGN/Audio");
     private static final int BUFFER_SIZE_IN_BYTES = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ,
             CHANNEL_CONFIG, AUDIO_FORMAT);
     //音频录制类
@@ -35,8 +35,10 @@ public class RecordAudioHelper {
     private Handler mHandler = null;
     //录制的线程,用于将音频源输出到本地存储卡
     private RecordRunnable mRecordRunnable;
+    private Context mContext;
 
     private RecordAudioHelper() {
+        //构建录音对象
         mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_IN_HZ, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE_IN_BYTES);
         mHandler = new Handler(Looper.getMainLooper());
     }
@@ -47,19 +49,35 @@ public class RecordAudioHelper {
      *
      * @param listener 录制的监听器
      */
-    public void startRecord(RecordAudioListener listener) {
+    public void startRecord(Context context, RecordAudioListener listener) {
         if (isRecording()) {
-            Log.e(TAG, "录制还未结束,请勿重复录制");
+            Log.d(TAG, "录制还未结束,请勿重复录制");
             return;
         }
-        Log.e(TAG, "开启录制线程.......");
+        Log.d(TAG, "开启录制线程.......");
         isRecording = true;
         mAudioRecord.startRecording();
+        //生成的文件路径如下: data/user/0/包名/cache/audio/1561711377776.wav
         String fileName = System.currentTimeMillis() + ".wav";
-        File recordFile = new File(RECORD_ROOT_DIR, fileName);
+        File recordFile = new File(getRecordRootDir(context), fileName);
         mRecordRunnable = new RecordRunnable(recordFile, listener);
         Thread thread = new Thread(mRecordRunnable);
         thread.start();
+    }
+
+    /**
+     * 根据App缓存路径组成录制目录
+     * 好处:
+     * 1.App缓存路径不需要sd卡读写权限
+     * 2.缓存路径的文件不能随意访问
+     * 如下:
+     * /data/user/0/App包名/cache/audio
+     *
+     * @param context
+     * @return
+     */
+    private File getRecordRootDir(Context context) {
+        return new File(context.getCacheDir(), "audio");
     }
 
     /**
@@ -69,7 +87,7 @@ public class RecordAudioHelper {
      */
     public void stopRecord(StateType type) {
         if (isRecording()) {
-            Log.e(TAG, "关闭录制线程.......");
+            Log.d(TAG, "关闭录制线程.......");
             mAudioRecord.stop();
             isRecording = false;
             switch (type) {
@@ -171,7 +189,7 @@ public class RecordAudioHelper {
                 if (!isRecordCancel) {
                     //录制成功回调
                     if (listener != null) {
-                        Log.e(TAG, "录制成功->" + recordFile.getAbsolutePath());
+                        Log.d(TAG, "录制成功->" + recordFile.getAbsolutePath());
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -181,12 +199,12 @@ public class RecordAudioHelper {
                     }
                 } else {
                     //如果是取消状态,删除刚刚录制好的文件,减少存储的空间
-                    Log.e(TAG, "取消录制,删除录制文件->" + recordFile.getAbsolutePath());
+                    Log.d(TAG, "取消录制,删除录制文件->" + recordFile.getAbsolutePath());
                     deleteRecordFile();
                 }
             } catch (IOException e) {
                 if (listener != null) {
-                    Log.e(TAG, "录制发生了错误", e);
+                    Log.d(TAG, "录制发生了错误", e);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -224,7 +242,7 @@ public class RecordAudioHelper {
         private void deleteRecordFile() {
             if (recordFile.exists() && recordFile.isFile()) {
                 boolean delete = recordFile.delete();
-                Log.e(TAG, "delete=" + delete);
+                Log.d(TAG, "delete=" + delete);
             }
         }
 
