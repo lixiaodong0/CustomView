@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
@@ -151,6 +152,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
 
                 //开始录制的判断条件= 长按 + 录制权限
                 if (endTime - mDownTime >= LONG_CLICK_TIME && !isReady && isRecordPermission) {
+                    shake();
                     //长按事件触发
                     isReady = true;
                     mStartRecordTime = System.currentTimeMillis();
@@ -322,4 +324,11 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
         Toast.makeText(getContext(), "录制失败", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * 控制手机震动的方法
+     */
+    private void shake() {
+        Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(100);
+    }
 }
