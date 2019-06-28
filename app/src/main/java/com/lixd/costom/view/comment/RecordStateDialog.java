@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.media.MediaRecorder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -99,8 +98,6 @@ public class RecordStateDialog extends Dialog {
      *
      * @param stateType
      */
-    private MediaRecorder mediaRecorder;
-
     private void refreshState(StateType stateType) {
         mCurStateType = stateType;
         switch (stateType) {
