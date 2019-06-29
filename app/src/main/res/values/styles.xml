@@ -19,4 +19,9 @@
         <item name="android:backgroundDimEnabled">false</item><!--模糊-->
     </style>
 
+
+    <style name="CommentEditTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">#1AAD19</item>
+        <item name="colorControlActivated">#1AAD19</item>
+    </style>
 </resources>

@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onCustomLinearLayout"
-        android:text="自定义LinearLayout"
-        android:textAllCaps="false"/>
+        android:orientation="vertical">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onCustomFlowLayout"
-        android:text="自定义FlowLayout"
-        android:textAllCaps="false"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onRecyclerView"
-        android:text="RecyclerView部分"
-        android:textAllCaps="false"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onCustomLinearLayout"
+            android:text="自定义LinearLayout"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onCustomFlowLayout"
+            android:text="自定义FlowLayout"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRecyclerView"
+            android:text="RecyclerView部分"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
 
-        <com.lixd.costom.view.comment.RecordAudioButton
+
+        <com.lixd.costom.view.comment.input.WechatInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <com.lixd.costom.view.comment.audio.RecordAudioButton
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
             android:gravity="center"
-            android:textColor="@android:color/black"
             android:text="按住 说话"
+            android:textColor="@android:color/black"
             android:textSize="14sp"/>
     </RelativeLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

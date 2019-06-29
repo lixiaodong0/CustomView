@@ -1,4 +1,4 @@
-package com.lixd.costom.view.comment;
+package com.lixd.costom.view.comment.audio;
 
 public enum StateType {
     //正常状态

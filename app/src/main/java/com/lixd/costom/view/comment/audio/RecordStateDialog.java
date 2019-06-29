@@ -1,4 +1,4 @@
-package com.lixd.costom.view.comment;
+package com.lixd.costom.view.comment.audio;
 
 import android.app.Activity;
 import android.app.Dialog;

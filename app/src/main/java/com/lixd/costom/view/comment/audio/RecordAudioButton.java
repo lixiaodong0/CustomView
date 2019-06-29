@@ -1,4 +1,4 @@
-package com.lixd.costom.view.comment;
+package com.lixd.costom.view.comment.audio;
 
 import android.Manifest;
 import android.app.Activity;
@@ -323,7 +323,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
 
     private RecordAudioListener mRecordAudioListener;
 
-    private void setRecordAudioListener(RecordAudioListener listener) {
+    public void setRecordAudioListener(RecordAudioListener listener) {
         mRecordAudioListener = listener;
     }
 

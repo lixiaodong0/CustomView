@@ -1,4 +1,4 @@
-package com.lixd.costom.view.comment;
+package com.lixd.costom.view.comment.audio;
 
 import android.content.Context;
 import android.media.AudioFormat;
