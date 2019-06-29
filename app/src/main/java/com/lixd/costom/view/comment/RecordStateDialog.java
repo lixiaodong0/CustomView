@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,8 @@ public class RecordStateDialog extends Dialog {
     private int mCountDownValue = 0;
     private Activity mActivity;
     private static Map<Integer, Integer> VOLUME_PIC_MAP;
+
+    private static Handler sHandler = new Handler();
 
     static {
         //初始化图片
@@ -67,6 +70,7 @@ public class RecordStateDialog extends Dialog {
      * @param stateType 当前状态值
      */
     public void showDialog(StateType stateType) {
+        sHandler.removeCallbacksAndMessages(null);
         refreshState(stateType);
         if (!isShowing() && !mActivity.isFinishing()) {
             show();
@@ -78,11 +82,30 @@ public class RecordStateDialog extends Dialog {
      */
     public void closeDialog() {
         if (isShowing()) {
-            dismiss();
+            if (mCurStateType == StateType.TIME_SHORT) {
+                //如果是录制时间过短的状态的话,延迟关闭弹窗,保证弹窗文本显示出来
+                sHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss();
+                    }
+                }, 100);
+            } else {
+                dismiss();
+            }
         }
         mCountDownValue = 0;
-        mCurStateType = StateType.NORMAL;
     }
+
+    /**
+     * 销毁的方法
+     */
+    public void destroy() {
+        sHandler.removeCallbacksAndMessages(null);
+        dismiss();
+        sHandler = null;
+    }
+
 
     /**
      * 倒计时值
@@ -104,7 +127,7 @@ public class RecordStateDialog extends Dialog {
             case CANCEL:
                 imgState.setImageResource(R.mipmap.rc_ic_volume_cancel);
                 tvStateText.setText("松开手指，取消发送");
-                tvStateText.setBackgroundColor(Color.RED);
+                tvStateText.setBackgroundColor(Color.parseColor("#730f0f"));
                 break;
             case TIMEOUT:
             case NORMAL:

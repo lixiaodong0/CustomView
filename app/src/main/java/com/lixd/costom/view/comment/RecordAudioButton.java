@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
+import com.lixd.costom.view.R;
+
 import java.io.File;
 
 /**
@@ -119,6 +121,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
         RecordAudioHelper.getInstance().destroy();
         //重置
         reset();
+        mDialog.destroy();
         mCountDownTimer = null;
         mDialog = null;
     }
@@ -135,6 +138,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
         super(context, attrs, defStyleAttr);
         mDialog = new RecordStateDialog(context);
         setText("按住 说话");
+        setBackgroundResource(R.drawable.recoed_btn_normal);
     }
 
     //保存手指移动x,y轴,用于倒计时60秒后,结束录制
@@ -153,6 +157,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
             case MotionEvent.ACTION_DOWN:
                 mDownTime = System.currentTimeMillis();
                 isRecordPermission = checkPermission();
+                setBackgroundResource(R.drawable.recoed_btn_pressed);
                 break;
             case MotionEvent.ACTION_MOVE:
                 long endTime = System.currentTimeMillis();
@@ -192,6 +197,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
                 break;
             case MotionEvent.ACTION_UP:
                 setText("按住 说话");
+                setBackgroundResource(R.drawable.recoed_btn_normal);
                 //判断是否已经处理过录制结果
                 if (!isHandlerRecordResult) {
                     handlerRecordResult(x, y);
@@ -205,6 +211,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
             //如果发生取消事件,取消录制
             case MotionEvent.ACTION_CANCEL:
                 setText("按住 说话");
+                setBackgroundResource(R.drawable.recoed_btn_normal);
                 isHandlerRecordResult = false;
                 RecordAudioHelper.getInstance().stopRecord(StateType.CANCEL);
                 reset();
@@ -230,6 +237,7 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
 
             //录制时间过短,这次录制的音频无效
             if (endRecordTime - MIN_RECORD_TIME <= mStartRecordTime) {
+                mDialog.showDialog(StateType.TIME_SHORT);
                 RecordAudioHelper.getInstance().stopRecord(StateType.TIME_SHORT);
             } else if (!isRecord(x, y)) {
                 //超出范围录制无效

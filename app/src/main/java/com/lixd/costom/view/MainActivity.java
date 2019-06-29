@@ -11,7 +11,6 @@ import com.lixd.costom.view.recyclerview.RecyclerViewDemoActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
