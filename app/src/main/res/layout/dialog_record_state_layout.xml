@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/loading_bg"
+    android:background="@drawable/record_dialog_bg"
     android:orientation="vertical"
     android:padding="15dp">
 
@@ -21,6 +21,7 @@
         android:paddingLeft="2dp"
         android:paddingTop="4dp"
         android:paddingRight="2dp"
+        android:textColor="#FFF"
         android:paddingBottom="4dp"
         android:text="手指上滑，取消发送"/>
 

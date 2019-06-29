@@ -29,7 +29,7 @@ public class RecordStateDialog extends Dialog {
     private Activity mActivity;
     private static Map<Integer, Integer> VOLUME_PIC_MAP;
 
-    private static Handler sHandler = new Handler();
+    private Handler mHandler = new Handler();
 
     static {
         //初始化图片
@@ -70,7 +70,7 @@ public class RecordStateDialog extends Dialog {
      * @param stateType 当前状态值
      */
     public void showDialog(StateType stateType) {
-        sHandler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
         refreshState(stateType);
         if (!isShowing() && !mActivity.isFinishing()) {
             show();
@@ -84,7 +84,7 @@ public class RecordStateDialog extends Dialog {
         if (isShowing()) {
             if (mCurStateType == StateType.TIME_SHORT) {
                 //如果是录制时间过短的状态的话,延迟关闭弹窗,保证弹窗文本显示出来
-                sHandler.postDelayed(new Runnable() {
+                mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         dismiss();
@@ -101,9 +101,9 @@ public class RecordStateDialog extends Dialog {
      * 销毁的方法
      */
     public void destroy() {
-        sHandler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
         dismiss();
-        sHandler = null;
+        mHandler = null;
     }
 
 
@@ -127,7 +127,7 @@ public class RecordStateDialog extends Dialog {
             case CANCEL:
                 imgState.setImageResource(R.mipmap.rc_ic_volume_cancel);
                 tvStateText.setText("松开手指，取消发送");
-                tvStateText.setBackgroundColor(Color.parseColor("#730f0f"));
+                tvStateText.setBackgroundResource(R.drawable.record_dialog_text_bg);
                 break;
             case TIMEOUT:
             case NORMAL:
