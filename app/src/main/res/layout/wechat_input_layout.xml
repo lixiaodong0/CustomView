@@ -51,21 +51,14 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!--
-    注意:
-    使用 android:imeOptions="actionSend"
-    需要配合下面方法(二选一即可)否则看不到效果
-      android:inputType="text"
-      android:singleLine="true"
-    -->
-    <EditText
+
+    <com.lixd.costom.view.comment.input.ImeOptionsEditText
         android:id="@+id/et_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:background="@drawable/wechat_input_edit_bg"
         android:imeOptions="actionSend"
-        android:inputType="text"
         android:maxHeight="110dp"
         android:text=""
         android:textColor="@android:color/black"

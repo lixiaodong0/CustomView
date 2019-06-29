@@ -45,6 +45,7 @@
 
 
         <com.lixd.costom.view.comment.input.WechatInputLayout
+            android:id="@+id/WechatInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

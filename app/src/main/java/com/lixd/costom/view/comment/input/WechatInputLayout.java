@@ -7,7 +7,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +24,7 @@ public class WechatInputLayout extends ConstraintLayout {
 
     private ImageView mImgToggle;
     private RecordAudioButton mRabAudio;
-    private EditText mEtContent;
+    private ImeOptionsEditText mEtContent;
 
     //是否是语音输入状态
     private boolean isAudioState = false;
