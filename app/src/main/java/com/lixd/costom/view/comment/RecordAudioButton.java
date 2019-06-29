@@ -47,6 +47,9 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
     private RecordStateDialog mDialog;
     //是否已经处理过录制结果,主要是为了区分60秒超时结束和正常手指抬起结束
     private boolean isHandlerRecordResult = false;
+    //倒计时控制震动操作
+    private boolean isCountDownShake = false;
+
     //倒计时任务
     private CountDownTimer mCountDownTimer = new CountDownTimer(MAX_RECORD_TIME, MIN_RECORD_TIME) {
         @Override
@@ -55,6 +58,10 @@ public class RecordAudioButton extends AppCompatButton implements RecordAudioLis
             int second = (int) (millisUntilFinished / 1000);
             //仿照微信最后10提醒用户
             if (second <= 10 && second > 0) {
+                if (!isCountDownShake) {
+                    shake();
+                    isCountDownShake = true;
+                }
                 mDialog.setCountDownValue(second);
                 mDialog.showDialog(StateType.TIMEOUT);
             } else if (second <= 0) {
