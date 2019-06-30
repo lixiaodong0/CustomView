@@ -210,7 +210,6 @@ public class RecordAudioButton extends AppCompatButton {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                mHandler.removeCallbacksAndMessages(null);
                 setText("按住 说话");
                 setBackgroundResource(R.drawable.recoed_btn_normal);
                 //判断是否已经处理过录制结果
@@ -225,7 +224,6 @@ public class RecordAudioButton extends AppCompatButton {
                 break;
             //如果发生取消事件,取消录制
             case MotionEvent.ACTION_CANCEL:
-                mHandler.removeCallbacksAndMessages(null);
                 setText("按住 说话");
                 setBackgroundResource(R.drawable.recoed_btn_normal);
                 isHandlerRecordResult = false;
@@ -340,6 +338,7 @@ public class RecordAudioButton extends AppCompatButton {
      * 重置数据
      */
     private void reset() {
+        mHandler.removeCallbacksAndMessages(null);
         //停止60秒倒计时
         mCountDownTimer.cancel();
         Log.e(TAG,"reset+取消了倒计时任务");
