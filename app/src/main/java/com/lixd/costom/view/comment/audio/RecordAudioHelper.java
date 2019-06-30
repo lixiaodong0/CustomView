@@ -37,7 +37,7 @@ public class RecordAudioHelper {
     //录制的线程,用于将音频源输出到本地存储卡
     private RecordRunnable mRecordRunnable;
 
-    private RecordAudioHelper() {
+    public RecordAudioHelper() {
         //构建录音对象
         /**
          * audioSource:是指录制源在此我们选择麦克风
@@ -145,7 +145,6 @@ public class RecordAudioHelper {
                 mHandler.removeCallbacksAndMessages(null);
                 mHandler = null;
             }
-            Holder.INSTANCE = null;
         }
     }
 
@@ -322,14 +321,5 @@ public class RecordAudioHelper {
 
             return header;
         }
-    }
-
-
-    public static final RecordAudioHelper getInstance() {
-        return Holder.INSTANCE;
-    }
-
-    private static final class Holder {
-        private static RecordAudioHelper INSTANCE = new RecordAudioHelper();
     }
 }

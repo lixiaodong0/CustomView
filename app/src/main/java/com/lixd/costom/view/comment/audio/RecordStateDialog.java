@@ -3,9 +3,12 @@ package com.lixd.costom.view.comment.audio;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.support.v4.util.SimpleArrayMap;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,23 +30,7 @@ public class RecordStateDialog extends Dialog {
     private StateType mCurStateType;
     private int mCountDownValue = 0;
     private Activity mActivity;
-    private static Map<Integer, Integer> VOLUME_PIC_MAP;
-
     private Handler mHandler = new Handler();
-
-    static {
-        //初始化图片
-        VOLUME_PIC_MAP = new HashMap<>();
-        VOLUME_PIC_MAP.put(0, R.mipmap.rc_ic_volume_0);
-        VOLUME_PIC_MAP.put(1, R.mipmap.rc_ic_volume_1);
-        VOLUME_PIC_MAP.put(2, R.mipmap.rc_ic_volume_2);
-        VOLUME_PIC_MAP.put(3, R.mipmap.rc_ic_volume_3);
-        VOLUME_PIC_MAP.put(4, R.mipmap.rc_ic_volume_4);
-        VOLUME_PIC_MAP.put(5, R.mipmap.rc_ic_volume_5);
-        VOLUME_PIC_MAP.put(6, R.mipmap.rc_ic_volume_6);
-        VOLUME_PIC_MAP.put(7, R.mipmap.rc_ic_volume_7);
-        VOLUME_PIC_MAP.put(8, R.mipmap.rc_ic_volume_8);
-    }
 
     public RecordStateDialog(Context context) {
         this(context, R.style.dialog);
@@ -61,7 +48,7 @@ public class RecordStateDialog extends Dialog {
         tvStateText = rootView.findViewById(R.id.tv_state_text);
         imgState = rootView.findViewById(R.id.img_state);
         setContentView(rootView);
-        refreshState(StateType.NORMAL);
+//        refreshState(StateType.NORMAL);
     }
 
     /**
@@ -164,7 +151,38 @@ public class RecordStateDialog extends Dialog {
      */
     private int getVolumePic(float percentValue) {
         int index = (int) (MAX_VOLUME_PIC_SIZE * percentValue);
-        return VOLUME_PIC_MAP.get(index);
+        int resId;
+        switch (index) {
+            case 1:
+                resId = R.mipmap.rc_ic_volume_1;
+                break;
+            case 2:
+                resId = R.mipmap.rc_ic_volume_2;
+                break;
+            case 3:
+                resId = R.mipmap.rc_ic_volume_3;
+                break;
+            case 4:
+                resId = R.mipmap.rc_ic_volume_4;
+                break;
+            case 5:
+                resId = R.mipmap.rc_ic_volume_5;
+                break;
+            case 6:
+                resId = R.mipmap.rc_ic_volume_6;
+                break;
+            case 7:
+                resId = R.mipmap.rc_ic_volume_7;
+                break;
+            case 8:
+                resId = R.mipmap.rc_ic_volume_8;
+                break;
+            case 0:
+            default:
+                resId = R.mipmap.rc_ic_volume_0;
+                break;
+        }
+        return resId;
     }
 
 

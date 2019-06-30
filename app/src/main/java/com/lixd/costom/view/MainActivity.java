@@ -1,11 +1,13 @@
 package com.lixd.costom.view;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.lixd.costom.view.comment.AudioPlayerUtil;
 import com.lixd.costom.view.comment.input.OnInputFinishListener;
 import com.lixd.costom.view.comment.input.WechatInputLayout;
 import com.lixd.costom.view.flowlayout.CustomFlowLayoutActivity;
@@ -16,17 +18,20 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
+    private AudioPlayerUtil playerUtil;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        playerUtil = new AudioPlayerUtil();
         WechatInputLayout wechatInputLayout = findViewById(R.id.WechatInputLayout);
         wechatInputLayout.setOnInputFinishListener(new OnInputFinishListener() {
 
             @Override
             public void onAudioFinish(File recordAudioFile, long recordDuration) {
                 Toast.makeText(MainActivity.this, "音频地址:" + recordAudioFile.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+//                playerUtil.play(recordAudioFile.getAbsolutePath());
             }
 
             @Override
