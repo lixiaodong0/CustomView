@@ -38,15 +38,7 @@ public class RecordAudioHelper {
     private RecordRunnable mRecordRunnable;
 
     public RecordAudioHelper() {
-        //构建录音对象
-        /**
-         * audioSource:是指录制源在此我们选择麦克风
-         * sampleRateInHz:默认采样频率，以赫兹为单位，官方文档说44100 为目前所有设备兼容，但是如果用模拟器测试的话会有问题，所以有的也用8000
-         * channelConfig:描述音频通道设置 CHANNEL_IN_MONO保证能在所有设备上工作
-         * audioFormat:音频流的格式，分为16bit 或8bit目前都支持的是ENCODING_PCM_16BIT.
-         * bufferSizeInBytes:在录制过程中,音频数据写入缓冲区的总数(字节).从缓冲区读取的新音频数据总会小于此值.这个值一般通过getMinBufferSize来获取.getMinBufferSize的参数可以参照audiorecord的构造函数。
-         */
-        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_IN_HZ, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE_IN_BYTES);
+
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -61,16 +53,31 @@ public class RecordAudioHelper {
             Log.e(TAG, "录制还未结束,请勿重复录制");
             return;
         }
-        Log.e(TAG, "开启录制线程.......");
-        isRecording = true;
-        mAudioRecord.startRecording();
-        //生成的文件路径如下: data/user/0/包名/cache/audio/1561711377776.wav
-        String fileName = System.currentTimeMillis() + ".wav";
-        //        File recordFile = new File(getRecordRootDir(context), fileName);
-        File recordFile = new File(getSdRecordRootDir(), fileName);
-        mRecordRunnable = new RecordRunnable(recordFile, listener);
-        Thread thread = new Thread(mRecordRunnable);
-        thread.start();
+        //构建录音对象
+        /**
+         * audioSource:是指录制源在此我们选择麦克风
+         * sampleRateInHz:默认采样频率，以赫兹为单位，官方文档说44100 为目前所有设备兼容，但是如果用模拟器测试的话会有问题，所以有的也用8000
+         * channelConfig:描述音频通道设置 CHANNEL_IN_MONO保证能在所有设备上工作
+         * audioFormat:音频流的格式，分为16bit 或8bit目前都支持的是ENCODING_PCM_16BIT.
+         * bufferSizeInBytes:在录制过程中,音频数据写入缓冲区的总数(字节).从缓冲区读取的新音频数据总会小于此值.这个值一般通过getMinBufferSize来获取.getMinBufferSize的参数可以参照audiorecord的构造函数。
+         */
+        try {
+            mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE_IN_HZ, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE_IN_BYTES);
+            Log.e(TAG, "开启录制线程.......");
+            mAudioRecord.startRecording();
+            isRecording = true;
+            //生成的文件路径如下: data/user/0/包名/cache/audio/1561711377776.wav
+            String fileName = System.currentTimeMillis() + ".wav";
+            //        File recordFile = new File(getRecordRootDir(context), fileName);
+            File recordFile = new File(getSdRecordRootDir(), fileName);
+            mRecordRunnable = new RecordRunnable(recordFile, listener);
+            Thread thread = new Thread(mRecordRunnable);
+            thread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "录制发生了错误,可能是因为系统默认禁用了录音权限");
+            listener.onError("录制发生了错误");
+        }
     }
 
     /**
@@ -197,6 +204,9 @@ public class RecordAudioHelper {
                 //关闭流
                 baos.close();
                 os.close();
+
+                //每次录制完毕释放资源
+                mAudioRecord.release();
 
                 //计算录制的时长
                 long endTime = System.currentTimeMillis();
