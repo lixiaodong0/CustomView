@@ -207,6 +207,7 @@ public class RecordAudioHelper {
                         long time = System.currentTimeMillis();
                         if (time - lastCalculateDbTime >= 1000) {
                             double db = calculateDb(bufferReadResult, buffer);
+//                            doublecalculateVolume(buffer);
                             recordAudioDbListner.onChange(db);
                             lastCalculateDbTime = System.currentTimeMillis();
                         }
@@ -310,6 +311,27 @@ public class RecordAudioHelper {
             Log.d(TAG, "分贝值:" + volume);
             return volume;
         }
+
+        private double doubleCalculateVolume(byte[] buffer) {
+            double sumVolume = 0.0;
+            double avgVolume = 0.0;
+            double volume = 0.0;
+            for (int i = 0; i < buffer.length; i += 2) {
+                int v1 = buffer[i] & 0xFF;
+                int v2 = buffer[i + 1] & 0xFF;
+
+                int temp = v1 + (v2 << 8);// 小端
+                if (temp >= 0x8000) {
+                    temp = 0xffff - temp;
+                }
+                sumVolume += Math.abs(temp);
+            }
+            avgVolume = sumVolume / buffer.length / 2;
+            volume = Math.log10(1 + avgVolume) * 10;
+            Log.d(TAG, "doubke分贝值:" + volume);
+            return volume;
+        }
+
 
         /**
          * 输出WAV格式的头信息,如果没有头信息,音频不可播放

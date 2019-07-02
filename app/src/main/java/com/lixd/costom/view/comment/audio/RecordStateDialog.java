@@ -142,19 +142,19 @@ public class RecordStateDialog extends Dialog {
 
     private int getVolumePic() {
         int resId;
-        if (mVolumeValue >= 10) {
+        if (mVolumeValue >= 10 && mVolumeValue < 20) {
             resId = R.mipmap.rc_ic_volume_1;
-        } else if (mVolumeValue >= 20) {
+        } else if (mVolumeValue >= 20 && mVolumeValue < 30) {
             resId = R.mipmap.rc_ic_volume_2;
-        } else if (mVolumeValue >= 30) {
+        } else if (mVolumeValue >= 30 && mVolumeValue < 40) {
             resId = R.mipmap.rc_ic_volume_3;
-        } else if (mVolumeValue >= 40) {
+        } else if (mVolumeValue >= 40 && mVolumeValue < 50) {
             resId = R.mipmap.rc_ic_volume_4;
-        } else if (mVolumeValue >= 50) {
+        } else if (mVolumeValue >= 50 && mVolumeValue < 60) {
             resId = R.mipmap.rc_ic_volume_5;
-        } else if (mVolumeValue >= 60) {
+        } else if (mVolumeValue >= 60 && mVolumeValue < 70) {
             resId = R.mipmap.rc_ic_volume_6;
-        } else if (mVolumeValue >= 70) {
+        } else if (mVolumeValue >= 70 && mVolumeValue < 80) {
             resId = R.mipmap.rc_ic_volume_7;
         } else if (mVolumeValue >= 80) {
             resId = R.mipmap.rc_ic_volume_8;
