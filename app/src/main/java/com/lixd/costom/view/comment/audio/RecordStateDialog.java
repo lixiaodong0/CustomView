@@ -3,21 +3,15 @@ package com.lixd.costom.view.comment.audio;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.BitmapRegionDecoder;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
-import android.support.v4.util.SimpleArrayMap;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lixd.costom.view.R;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RecordStateDialog extends Dialog {
     private static final String TAG = "RecordStateDialog";
@@ -29,6 +23,7 @@ public class RecordStateDialog extends Dialog {
     private ImageView imgState;
     private StateType mCurStateType;
     private int mCountDownValue = 0;
+    private int mVolumeValue;
     private Activity mActivity;
     private Handler mHandler = new Handler();
 
@@ -48,7 +43,7 @@ public class RecordStateDialog extends Dialog {
         tvStateText = rootView.findViewById(R.id.tv_state_text);
         imgState = rootView.findViewById(R.id.img_state);
         setContentView(rootView);
-//        refreshState(StateType.NORMAL);
+        //        refreshState(StateType.NORMAL);
     }
 
     /**
@@ -125,7 +120,7 @@ public class RecordStateDialog extends Dialog {
                  * 如果采用MediaRecorder录制音频的话
                  * 可以参考这个文章:https://blog.csdn.net/a1527238987/article/details/80423565
                  */
-                imgState.setImageResource(getVolumePic(getCurrentAudioVolumePercent()));
+                imgState.setImageResource(getVolumePic());
                 if (mCountDownValue != 0) {
                     String text = "还可以说" + mCountDownValue + "秒";
                     tvStateText.setText(text);
@@ -143,6 +138,32 @@ public class RecordStateDialog extends Dialog {
                 break;
         }
     }
+
+
+    private int getVolumePic() {
+        int resId;
+        if (mVolumeValue >= 10) {
+            resId = R.mipmap.rc_ic_volume_1;
+        } else if (mVolumeValue >= 20) {
+            resId = R.mipmap.rc_ic_volume_2;
+        } else if (mVolumeValue >= 30) {
+            resId = R.mipmap.rc_ic_volume_3;
+        } else if (mVolumeValue >= 40) {
+            resId = R.mipmap.rc_ic_volume_4;
+        } else if (mVolumeValue >= 50) {
+            resId = R.mipmap.rc_ic_volume_5;
+        } else if (mVolumeValue >= 60) {
+            resId = R.mipmap.rc_ic_volume_6;
+        } else if (mVolumeValue >= 70) {
+            resId = R.mipmap.rc_ic_volume_7;
+        } else if (mVolumeValue >= 80) {
+            resId = R.mipmap.rc_ic_volume_8;
+        } else {
+            resId = R.mipmap.rc_ic_volume_0;
+        }
+        return resId;
+    }
+
 
     /**
      * 根据百分比值获取一张音量图片
@@ -183,6 +204,16 @@ public class RecordStateDialog extends Dialog {
                 break;
         }
         return resId;
+    }
+
+
+    /**
+     * 设置音量值
+     *
+     * @param volumeValue
+     */
+    public void setVolumeValue(int volumeValue) {
+        this.mVolumeValue = volumeValue;
     }
 
 

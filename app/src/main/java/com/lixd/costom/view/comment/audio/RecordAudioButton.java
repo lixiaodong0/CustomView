@@ -122,6 +122,8 @@ public class RecordAudioButton extends AppCompatButton {
         //重置
         reset();
         mDialog.destroy();
+        mRecordAudioListener = null;
+        mAudioDbListener = null;
         mCountDownTimer = null;
         mDialog = null;
     }
@@ -141,6 +143,21 @@ public class RecordAudioButton extends AppCompatButton {
         setText("按住 说话");
         setBackgroundResource(R.drawable.recoed_btn_normal);
     }
+
+
+    /**
+     * 音量分贝监听器
+     */
+    private RecordAudioDbListener mAudioDbListener = new RecordAudioDbListener() {
+        @Override
+        public void onChange(double decibel) {
+            Log.e(TAG, "当前分贝:" + decibel);
+            if (mDialog != null) {
+                mDialog.setVolumeValue((int) decibel);
+            }
+        }
+    };
+
 
     //保存手指移动x,y轴,用于倒计时60秒后,结束录制
     private int x;
@@ -173,7 +190,7 @@ public class RecordAudioButton extends AppCompatButton {
                             mCountDownTimer.start();
                             Log.e(TAG, "录制开始时间：" + mStartRecordTime);
                             //开启录制功能
-                            mRecordAudioHelper.startRecord(getContext(), mRecordAudioListener);
+                            mRecordAudioHelper.startRecord(getContext(), mRecordAudioListener, mAudioDbListener);
                             setText("松开结束");
                             showRecordStateDialog(StateType.NORMAL);
                         }
@@ -181,24 +198,6 @@ public class RecordAudioButton extends AppCompatButton {
                 }, LONG_CLICK_TIME);
                 break;
             case MotionEvent.ACTION_MOVE:
-                /*long endTime = System.currentTimeMillis();
-                //开始录制的判断条件= 长按 + 录制权限
-                if (endTime - mDownTime >= LONG_CLICK_TIME && !isReady && isRecordPermission) {
-                    shake();
-                    //长按事件触发
-                    isReady = true;
-                    mStartRecordTime = System.currentTimeMillis();
-                    //开启60秒倒计时
-                    mCountDownTimer.start();
-                    Log.e(TAG, "录制开始时间：" + mStartRecordTime);
-                    //开启录制功能
-                    if (mRecordAudioListener == null) {
-                        RecordAudioHelper.getInstance().startRecord(getContext(), this);
-                    } else {
-                        RecordAudioHelper.getInstance().startRecord(getContext(), mRecordAudioListener);
-                    }
-                }*/
-
                 if (isRecord(x, y)) {
                     //正常录制提示文本
                     setText("松开结束");
@@ -341,7 +340,6 @@ public class RecordAudioButton extends AppCompatButton {
         mHandler.removeCallbacksAndMessages(null);
         //停止60秒倒计时
         mCountDownTimer.cancel();
-        Log.e(TAG,"reset+取消了倒计时任务");
         //关闭弹窗
         mDialog.closeDialog();
         mDownTime = 0;

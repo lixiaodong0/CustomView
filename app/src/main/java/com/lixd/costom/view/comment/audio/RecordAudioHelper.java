@@ -43,12 +43,17 @@ public class RecordAudioHelper {
     }
 
 
+    public void startRecord(Context context, RecordAudioListener listener) {
+        startRecord(context, listener, null);
+    }
+
     /**
      * 开始录制的方法
      *
-     * @param listener 录制的监听器
+     * @param listener              录制的监听器
+     * @param recordAudioDbListener 录制中分贝的监听器
      */
-    public void startRecord(Context context, RecordAudioListener listener) {
+    public void startRecord(Context context, RecordAudioListener listener, RecordAudioDbListener recordAudioDbListener) {
         if (isRecording()) {
             Log.e(TAG, "录制还未结束,请勿重复录制");
             return;
@@ -70,7 +75,7 @@ public class RecordAudioHelper {
             String fileName = System.currentTimeMillis() + ".wav";
             //        File recordFile = new File(getRecordRootDir(context), fileName);
             File recordFile = new File(getSdRecordRootDir(), fileName);
-            mRecordRunnable = new RecordRunnable(recordFile, listener);
+            mRecordRunnable = new RecordRunnable(recordFile, listener, recordAudioDbListener);
             Thread thread = new Thread(mRecordRunnable);
             thread.start();
         } catch (Exception e) {
@@ -162,13 +167,19 @@ public class RecordAudioHelper {
         //录制的存储文件
         private File recordFile;
         //录制监听器
-        private RecordAudioListener listener;
+        private RecordAudioListener recordAudioListener;
+        private RecordAudioDbListener recordAudioDbListner;
         //取消录制标识符
         private boolean isRecordCancel;
 
-        private RecordRunnable(File recordFile, RecordAudioListener listener) {
+        private RecordRunnable(File recordFile, RecordAudioListener recordAudioListener) {
+            this(recordFile, recordAudioListener, null);
+        }
+
+        private RecordRunnable(File recordFile, RecordAudioListener recordAudioListener, RecordAudioDbListener recordAudioDbListener) {
             this.recordFile = recordFile;
-            this.listener = listener;
+            this.recordAudioListener = recordAudioListener;
+            this.recordAudioDbListner = recordAudioDbListener;
         }
 
         @Override
@@ -186,9 +197,20 @@ public class RecordAudioHelper {
                 baos = new ByteArrayOutputStream();
                 byte[] buffer = new byte[BUFFER_SIZE_IN_BYTES];
                 int bufferReadResult = 0;
+                long lastCalculateDbTime = 0;
                 while (isRecording()) {
                     //读取录音数据
                     bufferReadResult = mAudioRecord.read(buffer, 0, buffer.length);
+
+                    //计算分贝
+                    if (recordAudioDbListner != null) {
+                        long time = System.currentTimeMillis();
+                        if (time - lastCalculateDbTime >= 1000) {
+                            double db = calculateDb(bufferReadResult, buffer);
+                            recordAudioDbListner.onChange(db);
+                            lastCalculateDbTime = System.currentTimeMillis();
+                        }
+                    }
 
                     //将数据存储到内存中
                     baos.write(buffer, 0, bufferReadResult);
@@ -213,12 +235,12 @@ public class RecordAudioHelper {
                 final long recordDuration = endTime - startTime;
                 if (!isRecordCancel) {
                     //录制成功回调
-                    if (listener != null) {
+                    if (recordAudioListener != null) {
                         Log.e(TAG, "录制成功->" + recordFile.getAbsolutePath());
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onSuccess(recordFile, recordDuration);
+                                recordAudioListener.onSuccess(recordFile, recordDuration);
                             }
                         });
                     }
@@ -228,12 +250,12 @@ public class RecordAudioHelper {
                     deleteRecordFile();
                 }
             } catch (IOException e) {
-                if (listener != null) {
+                if (recordAudioListener != null) {
                     Log.e(TAG, "录制发生了错误", e);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onError("录制错误");
+                            recordAudioListener.onError("录制错误");
                         }
                     });
                 }
@@ -269,6 +291,24 @@ public class RecordAudioHelper {
                 boolean delete = recordFile.delete();
                 Log.e(TAG, "delete=" + delete);
             }
+        }
+
+        /**
+         * 计算分贝值
+         */
+        private double calculateDb(int bufferReadResult, byte[] buffer) {
+            //r是实际读取的数据长度，一般而言r会小于buffersize
+            int r = bufferReadResult;
+            long v = 0;
+            // 将 buffer 内容取出，进行平方和运算
+            for (int i = 0; i < buffer.length; i++) {
+                v += buffer[i] * buffer[i];
+            }
+            // 平方和除以数据总长度，得到音量大小。
+            double mean = v / (double) r;
+            double volume = 10 * Math.log10(mean);
+            Log.d(TAG, "分贝值:" + volume);
+            return volume;
         }
 
         /**
