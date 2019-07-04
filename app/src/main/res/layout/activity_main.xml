@@ -37,11 +37,10 @@
     </LinearLayout>
 
 
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
 
         <com.lixd.costom.view.comment.input.WechatInputLayout
